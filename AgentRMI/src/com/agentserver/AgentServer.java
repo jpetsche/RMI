@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import com.rmiinterface.Beacon;
 import com.rmiinterface.RMIInterface;
 
-
 public class AgentServer extends UnicastRemoteObject implements RMIInterface {
 
     private static final long serialVersionUID = 1L;
@@ -51,10 +50,17 @@ public class AgentServer extends UnicastRemoteObject implements RMIInterface {
     public static void main(String[] args)
     {
         try{
-            Naming.rebind("//localhost/MyAgentServer", new AgentServer(initializeList()));
+            AgentServer obj = new AgentServer();
+            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(obj, 0);
+
+            //set up registry
+            Registry registry = LocateRegistry.getRegistry();
+            Registry.bind("RMIInterface", stub);
+
             System.err.println("Server ready");
         } catch (Exception e) {
             System.err.println("Server exception: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
